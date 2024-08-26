@@ -10,6 +10,7 @@
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -216,8 +217,12 @@
       crossorigin="anonymous"
     ></script>
 
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
+
     <script>
       Kakao.init("6098f40a4999ebee23fff0c4d3eb2fe4"); // 사용하려는 앱의 JavaScript 키 입력
+
+      var geocoder = new kakao.maps.services.Geocoder();
 
       const schedules = [
         {
@@ -261,9 +266,10 @@
                             <div class="line"></div>
                         </div>
                         <div class="navi-icon">
-                        <button style="border: none; padding: 0; background: none; id="naviBtn">
-                            <img src="https://i.ibb.co/LkHZXyh/navi.jpg">
-                        </button>                                
+<a id="start-navigation" href="javascript:startNavigation()">
+  <img src="https://i.ibb.co/Ltw4t5d/navi1.png">
+  </a>
+                                                     
                         </div>
                     </div>
                     <div class="separator"></div>
@@ -271,16 +277,25 @@
             `;
         container.innerHTML += scheduleHTML;
       });
-      const naviBtn = document.getElementById('naviBtn');
+      const naviBtn = document.getElementById("naviBtn");
 
-naviBtn.addEventListener('click', () => {
-    Kakao.Navi.start({
-        name: "현대백화점 판교점",
-        x: 127.11205203011632,
-        y: 37.39279717586919,
-        coordType: "wgs84",
-    });
-});
+      function startNavigation() {
+        geocoder.addressSearch(
+          schedules[0].stations[0].name,
+          function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            
+              Kakao.Navi.share({
+                name: schedules[0].stations[0].name,
+                x: coords.getLng(),
+                y: coords.getLat(),
+                coordType: "wgs84",
+              });
+            }
+          }
+        );
+      }
     </script>
   </body>
 </html>

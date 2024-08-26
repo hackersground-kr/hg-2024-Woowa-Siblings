@@ -1,4 +1,4 @@
-name: If push to the main, deploy it
+name: If push to the main, deploy it - web
 
 on:
   workflow_dispatch:
@@ -13,10 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-        ACR_NAME: ${{ secrets.ACR_NAME }} #woowasiblings
-        APP_NAME: canbus-web
-        APP_ENV: canbus-web-env
-        RG_NAME: ${{ secrets.RG_NAME }} #rg-2024-Woowa-Siblings
+        APP_NAME: ${{ secrets.SERVICE_NAME }}-web
+        APP_ENV: ${{ secrets.SERVICE_NAME }}-web-env
 
     steps:
 
@@ -32,14 +30,14 @@ jobs:
         uses: azure/container-apps-deploy-action@v0
         with:
           appSourcePath: ${{ github.workspace }}/${{ env.APP_NAME }}
-          acrName: ${{ env.ACR_NAME }}
+          acrName: ${{ secrets.ACR_NAME }}
           acrUsername: ${{ secrets.ACR_USERNAME }}
           acrPassword: ${{ secrets.ACR_PASSWORD }}
           containerAppName: ${{ env.APP_NAME }}
           containerAppEnvironment: ${{ env.APP_ENV }}
-          resourceGroup: ${{ env.RG_NAME }}
-          imageToBuild: ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+          resourceGroup: ${{ secrets.RG_NAME }}
+          imageToBuild: ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
           dockerfilePath: Dockerfile
 
       - name: Azure Container Apps Ingress Setting
-        run: az containerapp ingress update --name ${{ env.APP_NAME }} --resource-group ${{ env.RG_NAME }} --target-port 3000 --allow-insecure
+        run: az containerapp ingress update --name ${{ env.APP_NAME }} --resource-group ${{ secrets.RG_NAME }} --target-port 3000 --allow-insecure

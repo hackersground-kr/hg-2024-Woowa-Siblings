@@ -1,4 +1,4 @@
-name: If push to the main, deploy it
+name: If push to the main, deploy it - server
 
 on:
   workflow_dispatch:

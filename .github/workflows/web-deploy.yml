@@ -1,6 +1,7 @@
 name: If push to the main, deploy it
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -13,8 +14,8 @@ jobs:
 
     env:
         ACR_NAME: ${{ secrets.ACR_NAME }} #woowasiblings
-        APP_NAME: canbus-server
-        APP_ENV: canbus-server-env
+        APP_NAME: canbus-web
+        APP_ENV: canbus-web-env
         RG_NAME: ${{ secrets.RG_NAME }} #rg-2024-Woowa-Siblings
 
     steps:

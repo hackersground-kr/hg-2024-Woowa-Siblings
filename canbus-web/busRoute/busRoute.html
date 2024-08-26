@@ -263,8 +263,7 @@
                         <div class="navi-icon">
 <a id="start-navigation" href="javascript:startNavigation()">
   <img src="https://i.ibb.co/Ltw4t5d/navi1.png">
-    alt="길 안내하기 버튼" />
-</a>
+  </a>
                                                      
                         </div>
                     </div>
@@ -273,15 +272,25 @@
             `;
         container.innerHTML += scheduleHTML;
       });
-      const naviBtn = document.getElementById('naviBtn');
+      const naviBtn = document.getElementById("naviBtn");
+      var geocoder = new kakao.maps.services.Geocoder();
+
       function startNavigation() {
-    Kakao.Navi.start({
-      name: '현대백화점 판교점',
-      x: 127.11205203011632,
-      y: 37.39279717586919,
-      coordType: 'wgs84',
-    });
-  }
+        geocoder.addressSearch(
+          schedules[0].stations[0].name,
+          function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+
+              Kakao.Navi.share({
+                name: schedules[0].stations[0].name,
+                x: result[0].x,
+                y: result[0].y,
+                coordType: "wgs84",
+              });
+            }
+          }
+        );
+      }
     </script>
   </body>
 </html>

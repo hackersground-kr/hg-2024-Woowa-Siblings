@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - "canbus-server/**"
+    paths:
+      - "canbus-server/**"
 
 jobs:
   build:

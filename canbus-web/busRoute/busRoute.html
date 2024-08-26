@@ -261,9 +261,13 @@
                             <div class="line"></div>
                         </div>
                         <div class="navi-icon">
-                        <button style="border: none; padding: 0; background: none; id="naviBtn">
-                            <img src="https://i.ibb.co/LkHZXyh/navi.jpg">
-                        </button>                                
+<a id="start-navigation" href="javascript:startNavigation()">
+  <img src="https://developers.kakao.com/assets/img/about/buttons/navi/kakaonavi_btn_medium.png"
+    alt="길 안내하기 버튼" />
+</a>
+                        // <button style="border: none; padding: 0; background: none; id="naviBtn">
+                        //     <img id="naviBtn" src="https://i.ibb.co/Ltw4t5d/navi1.png">
+                        // </button>                                
                         </div>
                     </div>
                     <div class="separator"></div>
@@ -272,9 +276,17 @@
         container.innerHTML += scheduleHTML;
       });
       const naviBtn = document.getElementById('naviBtn');
-
-naviBtn.addEventListener('click', () => {
+      function startNavigation() {
     Kakao.Navi.start({
+      name: '현대백화점 판교점',
+      x: 127.11205203011632,
+      y: 37.39279717586919,
+      coordType: 'wgs84',
+    });
+  }
+    naviBtn.addEventListener('click', () => {
+        alert("asdf");
+        Kakao.Navi.share({
         name: "현대백화점 판교점",
         x: 127.11205203011632,
         y: 37.39279717586919,

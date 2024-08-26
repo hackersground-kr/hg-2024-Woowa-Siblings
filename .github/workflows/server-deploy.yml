@@ -1,6 +1,7 @@
 name: If push to the main, deploy it
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main

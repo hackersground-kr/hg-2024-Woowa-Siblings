@@ -24,26 +24,7 @@
             flex-direction: column;
             overflow: hidden;
         }
-
-        input[type="time"] {
-            width: 100%;
-            padding-right: 40px;
-            padding-left: 12px;
-            /* height: 50px; */
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-            font-family: sans-serif;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        .input-wrapper input[type="time"]::-webkit-datetime-edit {
-            font-weight: bold;
-        }
-
+        
         #map {
             width: 100%;
             height: 100%;
@@ -109,7 +90,7 @@
             align-items: center;
         }
 
-        .input-wrapper input {
+        .input-wrapper input, p {
             width: 100%;
             flex: 1;
             padding: 10px;
@@ -148,8 +129,8 @@
             color: #0083F0;
         }
 
-        .input-container input::placeholder {
-            color: #ccc;
+        .input-container input, p::placeholder {
+            color: #000000;
         }
 
         .icon {
@@ -229,15 +210,16 @@
                 <div class="input-container">
                     <div>
                         <div class="input-wrapper">
-                            <input type="time" id="timeInput" value="15:35">
+                            <input type="time" id="timeInput">
+                            <label for="timeInput"></label>
                             <i class="ph-bold ph-clock"></i>
                         </div>
                         <div class="input-wrapper">
-                            <input type="text" id="departure-location" placeholder="출발지를 입력하세요">
+                            <input class="grayText" type="text" id="departure-location" placeholder="출발지를 입력하세요">
                             <i class="ph-bold ph-navigation-arrow"></i>
                         </div>
                         <div class="input-wrapper">
-                            <input type="text" id="arrival-location" placeholder="도착지를 입력하세요">
+                            <input class="grayText" type="text" id="arrival-location" placeholder="도착지를 입력하세요">
                             <i class="ph-bold ph-flag-pennant"></i>
                         </div>
                     </div>
@@ -248,12 +230,17 @@
     </div>
 
     <script>
+        // const button = document.getElementById('showTimePicker');
+        // const timeInput = document.getElementById('timeInput');
 
-        const timeInput = document.getElementById('timeInput');
-        
-        timeInput.addEventListener('blur', function() {
-            timeInput.style.display = 'none';
-        });
+        // button.addEventListener('click', function() {
+        //     timeInput.style.display = 'block';
+        //     timeInput.focus();
+        // });
+
+        // timeInput.addEventListener('blur', function() {
+        //     timeInput.style.display = 'none';
+        // });
 
         document.addEventListener('DOMContentLoaded', function () {
             var container = document.getElementById('map');
@@ -494,8 +481,6 @@
                         polyline.setMap(map);
                     }
 
-
-                    // Bottom Sheet 관련 스크립트
                     const modal = document.querySelector('.modal');
                     const modalContent = document.querySelector('.modal-content');
                     const whiteBar = document.querySelector('.white-bar');

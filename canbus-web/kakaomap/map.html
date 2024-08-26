@@ -9,6 +9,9 @@
     <!-- Phosphor 아이콘 스타일 시트 -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
+   <!-- Pretendard 웹폰트 링크 -->
+   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
     <script
@@ -16,7 +19,7 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Pretendard', sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -477,7 +480,7 @@
                     let isDragging = false;
                     let startY = 0;
                     let startHeight = 0;
-                    const MIN_HEIGHT = window.innerHeight * 0.3;
+                    const MIN_HEIGHT = window.innerHeight * 0.2;
                     const MAX_HEIGHT = window.innerHeight * 0.8;
 
                     function onMouseMove(event) {

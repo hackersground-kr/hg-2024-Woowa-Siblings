@@ -1,24 +1,23 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Always Open Bottom Modal Sheet</title>
 
     <!-- Phosphor 아이콘 스타일 시트 -->
-    <link
-        rel="stylesheet"
-        type="text/css"
-        href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"
-    />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+    
 
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
+    <script
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Pretendard', sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -56,8 +55,10 @@
             position: relative;
             transform: translateY(0);
             transition: transform 0.3s ease, height 0.3s ease;
-            min-height: 30%; /* 최소 높이 */
-            max-height: 80%; /* 최대 높이 */
+            min-height: 30%;
+            /* 최소 높이 */
+            max-height: 80%;
+            /* 최대 높이 */
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
         }
 
@@ -99,7 +100,7 @@
             align-items: center;
         }
 
-        .input-wrapper input { 
+        .input-wrapper input {
             width: 100%;
             flex: 1;
             padding: 10px;
@@ -171,8 +172,10 @@
         /* Responsive styles */
         @media (max-width: 768px) {
             .modal-content {
-                min-height: 40%; /* 768px 이하일 때 최소 높이 40% */
+                min-height: 40%;
+                /* 768px 이하일 때 최소 높이 40% */
             }
+
             .submit-btn {
                 font-size: 16px;
             }
@@ -180,25 +183,31 @@
 
         @media (max-width: 480px) {
             .modal-content {
-                min-height: 50%; /* 480px 이하일 때 최소 높이 50% */
+                min-height: 50%;
+                /* 480px 이하일 때 최소 높이 50% */
             }
+
             .white-bar {
                 height: 25px;
             }
+
             .gray-bar {
                 width: 30px;
                 height: 3px;
             }
+
             .input-wrapper input {
                 padding: 8px;
                 font-size: 14px;
             }
+
             .submit-btn {
                 font-size: 14px;
                 height: 44px;
                 padding: 12px;
             }
         }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
@@ -293,6 +302,7 @@
             margin-left: 0.25rem;
             margin-bottom: -5px;
         }
+
         .bus-number {
             font-size: 1.125rem;
             font-weight: 500;
@@ -372,12 +382,74 @@
                 font-size: 14px;
 
             }
+
             .item a {
                 font-size: 10px;
             }
         }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            /* 지도 영역의 높이를 100%로 설정하여 전체 화면을 차지하도록 함 */
+        }
+
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            transition: height 0.3s ease;
+            z-index: 10;
+            /* 모달이 지도 위에 위치하도록 설정 */
+        }
+
+        .modal-content {
+            width: 100%;
+            background-color: white;
+            padding: 0;
+            height: 160px;
+            border-radius: 28px 28px 0 0;
+            position: relative;
+            transform: translateY(0);
+            transition: transform 0.3s ease, height 0.3s ease;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .white-bar {
+            width: 100%;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+
+        .gray-bar {
+            width: 35px;
+            height: 4px;
+            background: #DCDDDE;
+            border-radius: 8px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+
+        .white-bar:active {
+            cursor: grabbing;
+        }
+
     </style>
 </head>
+
 <body>
     <div id="map"></div>
 
@@ -394,103 +466,24 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var container = document.getElementById('map');
-            var map;
-            var markers = [];
-            var departureLocationInput = document.getElementById('departure-location');
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = {
+                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
 
-            // 지도 및 현재 위치 초기화
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var lat = position.coords.latitude;
-                    var lon = position.coords.longitude;
-                    var locPosition = new kakao.maps.LatLng(lat, lon);
-
-                    // 지도 초기화
-                    var options = {
-                        center: locPosition,
-                        level: 3
-                    };
-                    map = new kakao.maps.Map(container, options);
-
-                    // 사용자 마커 추가
-                    var userMarker = new kakao.maps.Marker({
-                        map: map,
-                        position: locPosition,
-                        title: "내 위치",
-                        clickable: true
-                    });
-
-                    var infowindow = new kakao.maps.InfoWindow({
-                        content: '<div style="padding:5px;font-size:12px;">내 위치</div>'
-                    });
-
-                    kakao.maps.event.addListener(userMarker, 'click', function() {
-                        infowindow.open(map, userMarker);
-                    });
-
-                    // Enter 키 입력 시 장소 검색
-                    departureLocationInput.addEventListener('keypress', function(event) {
-                        if (event.key === 'Enter') {
-                            event.preventDefault();
-                            searchPlaces(departureLocationInput.value);
-                        }
-                    });
-
-                    // 검색 버튼 클릭 시 장소 검색
-                    document.getElementById('submit-btn').addEventListener('click', function() {
-                        searchPlaces(departureLocationInput.value);
-                    });
-
-                    // 지도 클릭 시 마커 추가 및 처리
-                    kakao.maps.event.addListener(map, 'click', function(event) {
-                        var iconActive = document.querySelector('.input-wrapper i').classList.contains('active');
-
-                        if (iconActive) {
-                            var latlng = event.latLng;
-                            var placeName = '';
-
-                            // 장소 검색 및 마커 추가
-                            var ps = new kakao.maps.services.Places();
-                            ps.coordSearch(latlng.getLng(), latlng.getLat(), function(data, status) {
-                                if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                                    var place = data[0];
-                                    placeName = place.place_name;
-
-                                    // 기존 마커 제거
-                                    removeMarkers();
-
-                                    // 새로운 마커 추가
-                                    var marker = new kakao.maps.Marker({
-                                        map: map,
-                                        position: latlng
-                                    });
-                                    markers.push(marker);
-
-                                    // 인포윈도우 표시
-                                    var infowindow = new kakao.maps.InfoWindow({
-                                        content: '<div style="padding:5px;font-size:12px;">' + placeName + '</div>'
-                                    });
-                                    infowindow.open(map, marker);
-
-                                    // 출발지 입력 필드에 장소명 입력
-                                    departureLocationInput.value = placeName;
-                                } else {
-                                    alert("해당 위치에 대한 정보가 없습니다.");
-                                }
-                            });
-                        }
-                    });
-                }, function(error) {
-                    console.error("위치 정보를 가져올 수 없습니다.", error);
-                    alert("위치 정보를 가져올 수 없습니다.");
-                });
-            } else {
-                alert("사용자의 위치 정보를 가져올 수 없는 브라우저입니다.");
-            }
-        });
-        const schedules = [
+        // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+        const schedules = [{
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
+                stations: [
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
+                ],
+            },
             {
                 duration: "1시간 30분",
                 timeRange: "오후 6시 15분 - 오후 7시",
@@ -502,43 +495,43 @@
                 ],
             },
             {
-                duration: "2시간",
-                timeRange: "오후 5시 - 오후 7시",
-                busNumber: "3호차",
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
                 stations: [
-                    { name: "서울(터미널)", time: "오후 5시" },
-                    { name: "수원 농공 단지", time: "오후 6시" },
-                    { name: "평택", time: "오후 7시" },
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
                 ],
             },
             {
-                duration: "1시간 45분",
-                timeRange: "오후 4시 30분 - 오후 6시 15분",
-                busNumber: "2호차",
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
                 stations: [
-                    { name: "대전(터미널)", time: "오후 4시 30분" },
-                    { name: "청주 농공 단지", time: "오후 5시 30분" },
-                    { name: "천안", time: "오후 6시 15분" },
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
                 ],
             },
             {
-                duration: "1시간 15분",
-                timeRange: "오후 7시 - 오후 8시 15분",
-                busNumber: "4호차",
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
                 stations: [
-                    { name: "광주(터미널)", time: "오후 7시" },
-                    { name: "나주 농공 단지", time: "오후 7시 45분" },
-                    { name: "목포", time: "오후 8시 15분" },
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
                 ],
             },
             {
-                duration: "1시간 50분",
-                timeRange: "오후 3시 - 오후 4시 50분",
-                busNumber: "6호차",
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
                 stations: [
-                    { name: "부산(터미널)", time: "오후 3시" },
-                    { name: "양산 농공 단지", time: "오후 3시 50분" },
-                    { name: "울산", time: "오후 4시 50분" },
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
                 ],
             },
         ];
@@ -556,16 +549,16 @@
                     </div>
                     <div class="container">
                         ${schedule.stations
-                          .map(
-                            (station) => `
+                    .map(
+                        (station) => `
                             <div class="item">
                                 <div class="circle"></div>
                                 <p>${station.name}</p>
                                 <a class="station-time">${station.time}</a>
                             </div>
                         `
-                          )
-                          .join("")}
+                    )
+                    .join("")}
                         <div class="line"></div>
                     </div>
                 </div>
@@ -574,48 +567,6 @@
             container.innerHTML += scheduleHTML;
         });
         document.addEventListener('DOMContentLoaded', function () {
-            const icons = document.querySelectorAll('.input-wrapper i');
-            const submitBtn = document.getElementById('submit-btn');
-            const departureLocationInput = document.getElementById('departure-location');
-
-            // 아이콘 클릭 이벤트
-            icons.forEach(icon => {
-                icon.addEventListener('click', function () {
-                    if (this.classList.contains('active')) {
-                        this.classList.remove('active');
-                        this.classList.remove('ph-fill');
-                        this.classList.add('ph-bold');
-                    } else {
-                        icons.forEach(i => {
-                            i.classList.remove('active');
-                            i.classList.remove('ph-fill');
-                            i.classList.add('ph-bold');
-                        });
-                        this.classList.add('active');
-                        this.classList.add('ph-fill');
-                        this.classList.remove('ph-bold');
-                    }
-                });
-            });
-
-            // 입력 필드에서 Enter 키를 누를 때 이벤트 처리
-            departureLocationInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); // 기본 Enter 동작 방지
-                    sendKeyword();
-                }
-            });
-
-            // 제출 버튼 클릭 이벤트 처리
-            submitBtn.addEventListener('click', function() {
-                sendKeyword();
-            });
-
-            // 키워드를 부모 페이지로 전송하는 함수
-            function sendKeyword() {
-                var keyword = departureLocationInput.value;
-                window.parent.postMessage({ action: 'search', keyword: keyword }, '*');
-            }
 
             const modal = document.querySelector('.modal');
             const modalContent = document.querySelector('.modal-content');
@@ -624,7 +575,7 @@
             let isDragging = false;
             let startY = 0;
             let startHeight = 0;
-            const MIN_HEIGHT = window.innerHeight * 0.3; // 최소 높이: 화면 높이의 30%
+            const MIN_HEIGHT = window.innerHeight * 0.15; // 최소 높이: 화면 높이의 30%
             const MAX_HEIGHT = window.innerHeight * 0.8; // 최대 높이: 화면 높이의 80%
 
             function onMouseMove(event) {
@@ -651,4 +602,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -8,7 +8,7 @@
 
     <!-- Phosphor 아이콘 스타일 시트 -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
-    
+
 
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
@@ -387,6 +387,7 @@
                 font-size: 10px;
             }
         }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -446,13 +447,11 @@
         .white-bar:active {
             cursor: grabbing;
         }
-
     </style>
 </head>
 
 <body>
     <div id="map"></div>
-
     <div class="modal">
         <div class="modal-bg"></div>
         <div class="modal-content">
@@ -466,77 +465,32 @@
     </div>
 
     <script>
-        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-            mapOption = {
-                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                level: 3 // 지도의 확대 레벨
-            };
+        var mapContainer = document.getElementById('map');
+        var geocoder = new kakao.maps.services.Geocoder();
 
-        // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
-        var map = new kakao.maps.Map(mapContainer, mapOption);
         const schedules = [{
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-            {
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-            {
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-            {
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-            {
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-            {
-                duration: "1시간 30분",
-                timeRange: "오후 6시 15분 - 오후 7시",
-                busNumber: "5호차",
-                stations: [
-                    { name: "의성(터미널)", time: "오후 6시" },
-                    { name: "의성 농공 단지", time: "오후 6시 15분" },
-                    { name: "봉양", time: "오후 7시" },
-                ],
-            },
-        ];
+            duration: "1시간 30분",
+            timeRange: "오후 6시 15분 - 오후 7시",
+            busNumber: "5호차",
+            stations: [
+                { name: "경북 의성군 금성면 수정리 583", time: "오후 6시" },
+                { name: "경북 의성군 금성면 수정리 558-1", time: "오후 6시 15분" },
+                { name: "경북 의성군 금성면 수정리 423-1", time: "오후 7시" },
+            ],
+        },
+        {
+            duration: "1시간 30분",
+            timeRange: "오후 6시 15분 - 오후 7시",
+            busNumber: "5호차",
+            stations: [
+                { name: "의성(터미널)", time: "오후 6시" },
+                { name: "의성 농공 단지", time: "오후 6시 15분" },
+                { name: "봉양", time: "오후 7시" },
+            ],
+        }];
 
         const container = document.getElementById("schedulesContainer");
+
         schedules.forEach((schedule) => {
             const scheduleHTML = `
                 <div class="schedule">
@@ -566,8 +520,63 @@
             `;
             container.innerHTML += scheduleHTML;
         });
-        document.addEventListener('DOMContentLoaded', function () {
 
+        // 첫 번째 station의 좌표를 구해, 지도의 중심으로 설정합니다.
+        geocoder.addressSearch(schedules[0].stations[0].name, function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // 지도 옵션 설정
+                var mapOption = {
+                    center: coords,
+                    level: 3 // 확대 레벨 설정
+                };
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+
+                // 출발지 마커
+                const startMarker = new kakao.maps.Marker({
+                    position: coords,
+                    image: new kakao.maps.MarkerImage(
+                        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png',
+                        new kakao.maps.Size(42, 42)
+                    )
+                });
+                startMarker.setMap(map);
+
+                // 목적지 마커
+                const destination = schedules[0].stations[schedules[0].stations.length - 1];
+                geocoder.addressSearch(destination.name, function (result, status) {
+                    if (status === kakao.maps.services.Status.OK) {
+                        const destCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        const endMarker = new kakao.maps.Marker({
+                            position: destCoords,
+                            image: new kakao.maps.MarkerImage(
+                                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png',
+                                new kakao.maps.Size(42, 42)
+                            )
+                        });
+                        endMarker.setMap(map);
+
+                        // 경유지 마커
+                        schedules[0].stations.slice(1, -1).forEach(station => {
+                            geocoder.addressSearch(station.name, function (result, status) {
+                                if (status === kakao.maps.services.Status.OK) {
+                                    const stationCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                    const stationMarker = new kakao.maps.Marker({
+                                        position: stationCoords
+                                    });
+                                    stationMarker.setMap(map);
+                                }
+                            });
+                        });
+                    }
+                });
+            } else {
+                console.error(`Failed to find coordinates for: ${schedules[0].stations[0].name}`);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
             const modal = document.querySelector('.modal');
             const modalContent = document.querySelector('.modal-content');
             const whiteBar = document.querySelector('.white-bar');
@@ -575,8 +584,8 @@
             let isDragging = false;
             let startY = 0;
             let startHeight = 0;
-            const MIN_HEIGHT = window.innerHeight * 0.15; // 최소 높이: 화면 높이의 30%
-            const MAX_HEIGHT = window.innerHeight * 0.8; // 최대 높이: 화면 높이의 80%
+            const MIN_HEIGHT = window.innerHeight * 0.15;
+            const MAX_HEIGHT = window.innerHeight * 0.8;
 
             function onMouseMove(event) {
                 if (!isDragging) return;

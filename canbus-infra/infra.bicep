@@ -24,7 +24,7 @@ resource mySQLdb 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
   location: location
   properties: {
     administratorLogin: username
-    administratorLoginPassword: containerRegistry.listCredentials().passwords[0].value
+    administratorLoginPassword: password
     createMode: 'Default'
   }
 }

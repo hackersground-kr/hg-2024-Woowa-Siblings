@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_URL}:3306/${DB_SCHEMA}?useSSL=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        boot:
+          allow_jdbc_metadata_access: false
+    generate-ddl: true
+
+jwt:
+  security:
+    access-key: ${JWT_ACCESS_KEY}
+    refresh-key: ${JWT_REFRESH_KEY}
+    access-expired-date: ${JWT_ACCESS_EXPIRED}
+    refresh-expired-date: ${JWT_REFRESH_EXPIRED}

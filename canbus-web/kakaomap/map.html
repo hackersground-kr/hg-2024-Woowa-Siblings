@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kakao Map with Bottom Sheet</title>
-    
+
     <!-- Phosphor 아이콘 스타일 시트 -->
-    <link
-        rel="stylesheet"
-        type="text/css"
-        href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"
-    />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
 
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
+    <script
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
 
     <style>
         body {
@@ -27,9 +25,29 @@
             overflow: hidden;
         }
 
+        input[type="time"] {
+            width: 100%;
+            padding-right: 40px;
+            padding-left: 12px;
+            /* height: 50px; */
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            font-family: sans-serif;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .input-wrapper input[type="time"]::-webkit-datetime-edit {
+            font-weight: bold;
+        }
+
         #map {
             width: 100%;
-            height: 100%; /* 지도 영역의 높이를 100%로 설정하여 전체 화면을 차지하도록 함 */
+            height: 100%;
+            /* 지도 영역의 높이를 100%로 설정하여 전체 화면을 차지하도록 함 */
         }
 
         .modal {
@@ -38,7 +56,8 @@
             left: 0;
             width: 100%;
             transition: height 0.3s ease;
-            z-index: 10; /* 모달이 지도 위에 위치하도록 설정 */
+            z-index: 10;
+            /* 모달이 지도 위에 위치하도록 설정 */
         }
 
         .modal-content {
@@ -90,7 +109,7 @@
             align-items: center;
         }
 
-        .input-wrapper input { 
+        .input-wrapper input {
             width: 100%;
             flex: 1;
             padding: 10px;
@@ -160,8 +179,10 @@
         /* Responsive styles */
         @media (max-width: 768px) {
             .modal-content {
-                min-height: 40%; /* 768px 이하일 때 최소 높이 40% */
+                min-height: 40%;
+                /* 768px 이하일 때 최소 높이 40% */
             }
+
             .submit-btn {
                 font-size: 16px;
             }
@@ -169,19 +190,24 @@
 
         @media (max-width: 480px) {
             .modal-content {
-                min-height: 50%; /* 480px 이하일 때 최소 높이 50% */
+                min-height: 50%;
+                /* 480px 이하일 때 최소 높이 50% */
             }
+
             .white-bar {
                 height: 25px;
             }
+
             .gray-bar {
                 width: 30px;
                 height: 3px;
             }
+
             .input-wrapper input {
                 padding: 8px;
                 font-size: 14px;
             }
+
             .submit-btn {
                 font-size: 14px;
                 height: 44px;
@@ -190,6 +216,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="map"></div>
 
@@ -202,7 +229,7 @@
                 <div class="input-container">
                     <div>
                         <div class="input-wrapper">
-                            <input type="text" id="departure-time" placeholder="출발 시간을 입력하세요">
+                            <input type="time" id="timeInput" value="15:35">
                             <i class="ph-bold ph-clock"></i>
                         </div>
                         <div class="input-wrapper">
@@ -214,22 +241,34 @@
                             <i class="ph-bold ph-flag-pennant"></i>
                         </div>
                     </div>
-                    <button class="submit-btn" id="submit-btn">검색하기</button>
+                    <button class="submit-btn" id="submit-btn">노선 신청하기</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+
+        const timeInput = document.getElementById('timeInput');
+        
+        timeInput.addEventListener('blur', function() {
+            timeInput.style.display = 'none';
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             var container = document.getElementById('map');
             var map;
             var markers = [];
+            var departureMarker = null;
+            var arrivalMarker = null;
+            var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
             var departureLocationInput = document.getElementById('departure-location');
+            var arrivalLocationInput = document.getElementById('arrival-location');
+            var currentInputField = null;
 
             // 지도 및 현재 위치 초기화
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     var lat = position.coords.latitude;
                     var lon = position.coords.longitude;
                     var locPosition = new kakao.maps.LatLng(lat, lon);
@@ -253,60 +292,24 @@
                         content: '<div style="padding:5px;font-size:12px;">내 위치</div>'
                     });
 
-                    kakao.maps.event.addListener(userMarker, 'click', function() {
+                    kakao.maps.event.addListener(userMarker, 'click', function () {
                         infowindow.open(map, userMarker);
                     });
 
-                    // Enter 키 입력 시 장소 검색
-                    departureLocationInput.addEventListener('keypress', function(event) {
+                    departureLocationInput.addEventListener('keypress', function (event) {
                         if (event.key === 'Enter') {
                             event.preventDefault();
-                            searchPlaces(departureLocationInput.value);
+                            currentInputField = departureLocationInput;
+                            searchPlaces(currentInputField.value);
                         }
                     });
 
-                    // 검색 버튼 클릭 시 장소 검색
-                    document.getElementById('submit-btn').addEventListener('click', function() {
-                        searchPlaces(departureLocationInput.value);
-                    });
-
-                    // 지도 클릭 시 마커 추가 및 처리
-                    kakao.maps.event.addListener(map, 'click', function(event) {
-                        var iconActive = document.querySelector('.input-wrapper i').classList.contains('active');
-
-                        if (iconActive) {
-                            var latlng = event.latLng;
-                            var placeName = '';
-
-                            // 장소 검색 및 마커 추가
-                            var ps = new kakao.maps.services.Places();
-                            ps.coordSearch(latlng.getLng(), latlng.getLat(), function(data, status) {
-                                if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                                    var place = data[0];
-                                    placeName = place.place_name;
-
-                                    // 기존 마커 제거
-                                    removeMarkers();
-
-                                    // 새로운 마커 추가
-                                    var marker = new kakao.maps.Marker({
-                                        map: map,
-                                        position: latlng
-                                    });
-                                    markers.push(marker);
-
-                                    // 인포윈도우 표시
-                                    var infowindow = new kakao.maps.InfoWindow({
-                                        content: '<div style="padding:5px;font-size:12px;">' + placeName + '</div>'
-                                    });
-                                    infowindow.open(map, marker);
-
-                                    // 출발지 입력 필드에 장소명 입력
-                                    departureLocationInput.value = placeName;
-                                } else {
-                                    alert("해당 위치에 대한 정보가 없습니다.");
-                                }
-                            });
+                    // 도착지 입력 필드에서 키워드 입력 후 Enter 시 장소 검색
+                    arrivalLocationInput.addEventListener('keypress', function (event) {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            currentInputField = arrivalLocationInput;
+                            searchPlaces(currentInputField.value);
                         }
                     });
 
@@ -320,7 +323,7 @@
                         removeMarkers();
 
                         var ps = new kakao.maps.services.Places();
-                        ps.keywordSearch(keyword, function(data, status) {
+                        ps.keywordSearch(keyword, function (data, status) {
                             if (status === kakao.maps.services.Status.OK) {
                                 var bounds = new kakao.maps.LatLngBounds();
                                 for (var i = 0; i < data.length; i++) {
@@ -331,14 +334,18 @@
                                     });
                                     markers.push(marker);
 
-                                    (function(marker, place) {
-                                        kakao.maps.event.addListener(marker, 'click', function() {
-                                            var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+                                    (function (marker, place) {
+                                        kakao.maps.event.addListener(marker, 'click', function () {
+                                            if (infowindow) { // 기존에 열려있던 인포윈도우를 닫음
+                                                infowindow.close();
+                                                removeMarkers();
+                                            }
+                                            infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
                                             infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
                                             infowindow.open(map, marker);
-                                            
-                                            // 마커 클릭 시 출발지 입력 필드에 장소명 입력
-                                            departureLocationInput.value = place.place_name;
+
+                                            // 마커 클릭 시 해당 입력 필드에 장소명 입력
+                                            currentInputField.value = place.place_name;
                                         });
                                     })(marker, place);
 
@@ -359,9 +366,13 @@
                             markers[i].setMap(null);
                         }
                         markers = [];
+                        if (infowindow) { // 모든 마커를 삭제할 때 인포윈도우도 닫음
+                            infowindow.close();
+                            infowindow = null;
+                        }
                     }
 
-                    // Bottom sheet 관련 스크립트
+                    // 출발지와 도착지 아이콘 클릭 시 활성화 상태 변경
                     const icons = document.querySelectorAll('.input-wrapper i');
 
                     icons.forEach(icon => {
@@ -383,6 +394,108 @@
                         });
                     });
 
+
+                    // 지도 클릭 시 이벤트 처리
+                    kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+                        var latlng = mouseEvent.latLng;
+                        var geocoder = new kakao.maps.services.Geocoder();
+
+                        geocoder.coord2Address(latlng.getLng(), latlng.getLat(), function (result, status) {
+                            if (status === kakao.maps.services.Status.OK) {
+                                var address = result[0].address.address_name;
+
+                                if (document.querySelector('.ph-navigation-arrow.active')) {
+                                    if (departureMarker) {
+                                        departureMarker.setMap(null);
+                                    }
+                                    departureMarker = new kakao.maps.Marker({
+                                        map: map,
+                                        position: latlng
+                                    });
+                                    departureLocationInput.value = address;
+                                    infowindow.setContent('<div style="padding:5px;font-size:12px;">' + address + '</div>');
+                                    infowindow.open(map, departureMarker);
+
+                                } else if (document.querySelector('.ph-flag-pennant.active')) {
+                                    if (arrivalMarker) {
+                                        arrivalMarker.setMap(null);
+                                    }
+                                    arrivalMarker = new kakao.maps.Marker({
+                                        map: map,
+                                        position: latlng
+                                    });
+                                    arrivalLocationInput.value = address;
+                                    infowindow.setContent('<div style="padding:5px;font-size:12px;">' + address + '</div>');
+                                    infowindow.open(map, arrivalMarker);
+                                }
+                            }
+                        });
+
+                        getCarDirection();
+                    });
+
+                    async function getCarDirection() {
+                        const REST_API_KEY = '6098f40a4999ebee23fff0c4d3eb2fe4';
+                        // 호출방식의 URL을 입력합니다.
+                        const url = 'https://apis-navi.kakaomobility.com/v1/directions';
+
+                        // 출발지(origin), 목적지(destination)의 좌표를 문자열로 변환합니다.
+                        const origin = `${departureMarker.getPostion().getLng()},${departureMarker.getPostion().getLat()}`;
+                        const destination = `${arrivalMarker.getPostion().getLng()},${arrivalMarker.getPostion().getLat()}`;
+
+                        // 요청 헤더를 추가합니다.
+                        const headers = {
+                            Authorization: `KakaoAK ${REST_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        };
+
+                        // 표3의 요청 파라미터에 필수값을 적어줍니다.
+                        const queryParams = new URLSearchParams({
+                            origin: origin,
+                            destination: destination
+                        });
+
+                        const requestUrl = `${url}?${queryParams}`; // 파라미터까지 포함된 전체 URL
+
+                        try {
+                            const response = await fetch(requestUrl, {
+                                method: 'GET',
+                                headers: headers
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+
+                            console.log(data)
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+
+                        const linePath = [];
+                        data.routes[0].sections[0].roads.forEach(router => {
+                            router.vertexes.forEach((vertex, index) => {
+                                // x,y 좌표가 우르르 들어옵니다. 그래서 인덱스가 짝수일 때만 linePath에 넣어봅시다.
+                                // 저도 실수한 것인데 lat이 y이고 lng이 x입니다.
+                                if (index % 2 === 0) {
+                                    linePath.push(new kakao.maps.LatLng(router.vertexes[index + 1], router.vertexes[index]));
+                                }
+                            });
+                        });
+                        var polyline = new kakao.maps.Polyline({
+                            path: linePath,
+                            strokeWeight: 5,
+                            strokeColor: '#000000',
+                            strokeOpacity: 0.7,
+                            strokeStyle: 'solid'
+                        });
+                        polyline.setMap(map);
+                    }
+
+
+                    // Bottom Sheet 관련 스크립트
                     const modal = document.querySelector('.modal');
                     const modalContent = document.querySelector('.modal-content');
                     const whiteBar = document.querySelector('.white-bar');
@@ -414,7 +527,7 @@
                         document.addEventListener('mousemove', onMouseMove);
                         document.addEventListener('mouseup', onMouseUp);
                     });
-                }, function(error) {
+                }, function (error) {
                     console.error("위치 정보를 가져올 수 없습니다.", error);
                     alert("위치 정보를 가져올 수 없습니다.");
                 });

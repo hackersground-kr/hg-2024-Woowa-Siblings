@@ -23,7 +23,7 @@
             text-align: center;
             box-sizing: border-box;
         }
-        .login-container input[type="email"],
+        .login-container input[type="text"],
         .login-container input[type="password"] {
             width: 100%;
             padding: 12px;
@@ -66,16 +66,55 @@
     </style>
 </head>
 <body>
+    
     <div class="login-container">
-        <div class="label">아이디 또는 이메일</div>
-        <input type="email" placeholder="이메일을 입력해주세요">
+        <div class="label">아이디</div>
+        <input type="text" id="identifier" placeholder="아이디를 입력해주세요">
         
         <div class="label">비밀번호</div>
-        <input type="password" placeholder="비밀번호를 입력해주세요">
+        <input type="password" id="password" placeholder="비밀번호를 입력해주세요">
         
-        <button>로그인</button>
+        <button id="loginBtn">로그인</button>
         
-        <a href="../auth/register" class="signup-link">캔버스가 처음이신가요? 회원가입</a>
+        <a href="#" class="signup-link" onclick="document.location.href='../register'">캔버스가 처음이신가요? 회원가입</a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        
+document.addEventListener('DOMContentLoaded', function() {
+    const loginBtn = document.getElementById('loginBtn');
+
+    loginBtn.addEventListener('click', function(event) {
+        event.preventDefault(); // 기본 폼 제출 방지
+
+        const identifier = document.getElementById('identifier').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!identifier || !password) {
+            alert('아이디과 비밀번호를 입력해주세요.');
+            return;
+        }
+
+        // Axios를 사용하여 POST 요청 보내기
+        axios.post('https://canbus-server.whitedesert-8909941f.westus2.azurecontainerapps.io/auth/login', {
+            identifier: identifier,
+            password: password
+        })
+        .then(response => {
+            alert(response.data.message);
+            document.location.href='../';
+            console.log(response.data);
+        })
+        .catch(error => {
+            if (error.response) {
+                alert(error.response.data.message); // 오류 메시지 표시
+            } else {
+                console.error('Error:', error.message);
+            }
+        });
+    });
+});
+    </script>
+
 </body>
 </html>

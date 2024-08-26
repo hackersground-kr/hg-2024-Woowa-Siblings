@@ -27,8 +27,30 @@
 
 ### 사전 준비 사항
 
-> **여러분의 제품/서비스를 Microsoft 애저 클라우드에 배포하기 위해 사전에 필요한 준비 사항들을 적어주세요.**
+> 여러분의 제품/서비스를 Microsoft 애저 클라우드에 배포하기 위해 사전에 필요한 준비 사항들을 적어주세요.
+>
+
+- Github 계정 - [Github 회원가입](https://github.com/signup)
+- Azure 구독
+- MySQL Workbench, TablePlus, CLI 환경 등 **DB 연결 도구**
+    - [MySQL Workbench 설치 링크](https://dev.mysql.com/downloads/workbench/)
+    - 이 문서에서는 MySQL Workbench를 기준으로 설명합니다
+    - 본인의 운영체제에 맞는 버전을 선택해주세요
+    - Download 버튼을 눌러 설치 패키지를 다운로드 받고 패키지를 실행해 설치 프로세스를 따라 설치해주세요
+
+    - [Windows 설치 가이드](WORKBENCH_INSTALL_WIN.md)
+
+    - [Mac 설치 가이드](WORKBENCH_INSTALL_MAC.md)
 
 ## 시작하기
 
-> **여러분의 제품/서비스를 Microsoft 애저 클라우드에 배포하기 위한 절차를 구체적으로 나열해 주세요.**
+> 여러분의 제품/서비스를 Microsoft 애저 클라우드에 배포하기 위한 절차를 구체적으로 나열해 주세요.
+>
+
+**INFRA -> SERVER -> WEB 순으로 진행하셔야 합니다**
+
+[인프라 배포하기](INFRA_DEPLOY.md)
+
+[서버 배포하기](SERVER_DEPLOY.md)
+
+[웹 배포하기](WEB_DEPLOY.md)

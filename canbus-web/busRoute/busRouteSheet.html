@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Always Open Bottom Modal Sheet</title>
+
+    <!-- Phosphor 아이콘 스타일 시트 -->
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"
+    />
+
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            transition: height 0.3s ease;
+        }
+
+        .modal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: background-color 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            width: 100%;
+            background-color: white;
+            padding: 0px;
+            border-radius: 28px 28px 0 0;
+            position: relative;
+            transform: translateY(0);
+            transition: transform 0.3s ease, height 0.3s ease;
+            min-height: 30%; /* 최소 높이 */
+            max-height: 80%; /* 최대 높이 */
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .white-bar {
+            width: 100%;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+
+        .gray-bar {
+            width: 35px;
+            height: 4px;
+            background: #DCDDDE;
+            border-radius: 8px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+
+        .white-bar:active {
+            cursor: grabbing;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            max-width: 400px;
+            padding-bottom: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            margin: 0 auto;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input { 
+            width: 100%;
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 0;
+            outline: none;
+        }
+
+        .input-wrapper:first-child input {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .input-wrapper:last-child input {
+            border-bottom: 1px solid #ccc;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            z-index: 4;
+        }
+
+        .input-wrapper i {
+            margin-left: 10px;
+            font-size: 24px;
+            color: #5E5E5E;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        /* 호버 시 색상 변경 */
+        .input-wrapper i:hover {
+            color: #0083F0;
+        }
+
+        /* 클릭 시 색상과 스타일 변경 */
+        .input-wrapper i.active {
+            color: #0083F0;
+        }
+
+        .input-container input::placeholder {
+            color: #ccc;
+        }
+
+        .icon {
+            margin-left: 12px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .submit-btn {
+            margin-top: 16px;
+            width: 100%;
+            height: 48px;
+            padding: 15px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #357ae8;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .modal-content {
+                min-height: 40%; /* 768px 이하일 때 최소 높이 40% */
+            }
+            .submit-btn {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                min-height: 50%; /* 480px 이하일 때 최소 높이 50% */
+            }
+            .white-bar {
+                height: 25px;
+            }
+            .gray-bar {
+                width: 30px;
+                height: 3px;
+            }
+            .input-wrapper input {
+                padding: 8px;
+                font-size: 14px;
+            }
+            .submit-btn {
+                font-size: 14px;
+                height: 44px;
+                padding: 12px;
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            gap: 4px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .circle {
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #ffffff;
+            border-radius: 50%;
+            margin: 0.5rem;
+            outline: 2px solid #c3c3c3;
+        }
+
+        .item p {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-right: 14;
+        }
+
+        .item a {
+            font-size: 10px;
+            margin-left: 3px;
+            color: #8c8c8c;
+        }
+
+        .station-time {
+            align-self: flex-end;
+            margin-bottom: 2px;
+            color: #8c8c8c;
+        }
+
+        .line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0.5rem;
+            margin: 0.5rem;
+            height: calc(100% - 1rem);
+            border-radius: 50px;
+            background-color: #929292;
+        }
+
+        .schedule {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-width: 100%;
+            margin: 1rem auto;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .time-duration {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .time-range {
+            font-size: 10px;
+            color: gray;
+            margin-left: 0.25rem;
+            margin-bottom: -5px;
+        }
+        .bus-number {
+            font-size: 1.125rem;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .station {
+            font-size: 0.75rem;
+            color: gray;
+            margin: 0.5rem 0;
+        }
+
+        .station-title {
+            font-size: 1.125rem;
+            color: black;
+        }
+
+        .separator {
+            height: 2px;
+            background-color: #e0e0e0;
+            margin: 1rem 0;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .time-duration {
+                font-size: 1rem;
+            }
+
+            .bus-number {
+                font-size: 1rem;
+            }
+
+            .schedule {
+                padding: 0.75rem;
+                margin: 0.75rem auto;
+            }
+
+            .line {
+                width: 0.4rem;
+                margin: 0.4rem;
+            }
+
+            .circle {
+                width: 0.4rem;
+                height: 0.4rem;
+                margin: 0.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time-duration {
+                font-size: 18px;
+            }
+
+            .bus-number {
+                font-size: 18px;
+            }
+
+            .schedule {
+                padding: 0.5rem;
+                margin: 0.5rem auto;
+            }
+
+            .line {
+                width: 0.3rem;
+                margin: 0.3rem;
+            }
+
+            .circle {
+                width: 0.3rem;
+                height: 0.3rem;
+                margin: 0.3rem;
+            }
+
+            .item p {
+                font-size: 14px;
+
+            }
+            .item a {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="modal">
+        <div class="modal-bg"></div>
+        <div class="modal-content">
+            <div class="white-bar">
+                <div class="gray-bar"></div>
+            </div>
+            <div>
+                <div id="schedulesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var container = document.getElementById('map');
+            var map;
+            var markers = [];
+            var departureLocationInput = document.getElementById('departure-location');
+
+            // 지도 및 현재 위치 초기화
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    var locPosition = new kakao.maps.LatLng(lat, lon);
+
+                    // 지도 초기화
+                    var options = {
+                        center: locPosition,
+                        level: 3
+                    };
+                    map = new kakao.maps.Map(container, options);
+
+                    // 사용자 마커 추가
+                    var userMarker = new kakao.maps.Marker({
+                        map: map,
+                        position: locPosition,
+                        title: "내 위치",
+                        clickable: true
+                    });
+
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="padding:5px;font-size:12px;">내 위치</div>'
+                    });
+
+                    kakao.maps.event.addListener(userMarker, 'click', function() {
+                        infowindow.open(map, userMarker);
+                    });
+
+                    // Enter 키 입력 시 장소 검색
+                    departureLocationInput.addEventListener('keypress', function(event) {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            searchPlaces(departureLocationInput.value);
+                        }
+                    });
+
+                    // 검색 버튼 클릭 시 장소 검색
+                    document.getElementById('submit-btn').addEventListener('click', function() {
+                        searchPlaces(departureLocationInput.value);
+                    });
+
+                    // 지도 클릭 시 마커 추가 및 처리
+                    kakao.maps.event.addListener(map, 'click', function(event) {
+                        var iconActive = document.querySelector('.input-wrapper i').classList.contains('active');
+
+                        if (iconActive) {
+                            var latlng = event.latLng;
+                            var placeName = '';
+
+                            // 장소 검색 및 마커 추가
+                            var ps = new kakao.maps.services.Places();
+                            ps.coordSearch(latlng.getLng(), latlng.getLat(), function(data, status) {
+                                if (status === kakao.maps.services.Status.OK && data.length > 0) {
+                                    var place = data[0];
+                                    placeName = place.place_name;
+
+                                    // 기존 마커 제거
+                                    removeMarkers();
+
+                                    // 새로운 마커 추가
+                                    var marker = new kakao.maps.Marker({
+                                        map: map,
+                                        position: latlng
+                                    });
+                                    markers.push(marker);
+
+                                    // 인포윈도우 표시
+                                    var infowindow = new kakao.maps.InfoWindow({
+                                        content: '<div style="padding:5px;font-size:12px;">' + placeName + '</div>'
+                                    });
+                                    infowindow.open(map, marker);
+
+                                    // 출발지 입력 필드에 장소명 입력
+                                    departureLocationInput.value = placeName;
+                                } else {
+                                    alert("해당 위치에 대한 정보가 없습니다.");
+                                }
+                            });
+                        }
+                    });
+                }, function(error) {
+                    console.error("위치 정보를 가져올 수 없습니다.", error);
+                    alert("위치 정보를 가져올 수 없습니다.");
+                });
+            } else {
+                alert("사용자의 위치 정보를 가져올 수 없는 브라우저입니다.");
+            }
+        });
+        const schedules = [
+            {
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
+                stations: [
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
+                ],
+            },
+            {
+                duration: "2시간",
+                timeRange: "오후 5시 - 오후 7시",
+                busNumber: "3호차",
+                stations: [
+                    { name: "서울(터미널)", time: "오후 5시" },
+                    { name: "수원 농공 단지", time: "오후 6시" },
+                    { name: "평택", time: "오후 7시" },
+                ],
+            },
+            {
+                duration: "1시간 45분",
+                timeRange: "오후 4시 30분 - 오후 6시 15분",
+                busNumber: "2호차",
+                stations: [
+                    { name: "대전(터미널)", time: "오후 4시 30분" },
+                    { name: "청주 농공 단지", time: "오후 5시 30분" },
+                    { name: "천안", time: "오후 6시 15분" },
+                ],
+            },
+            {
+                duration: "1시간 15분",
+                timeRange: "오후 7시 - 오후 8시 15분",
+                busNumber: "4호차",
+                stations: [
+                    { name: "광주(터미널)", time: "오후 7시" },
+                    { name: "나주 농공 단지", time: "오후 7시 45분" },
+                    { name: "목포", time: "오후 8시 15분" },
+                ],
+            },
+            {
+                duration: "1시간 50분",
+                timeRange: "오후 3시 - 오후 4시 50분",
+                busNumber: "6호차",
+                stations: [
+                    { name: "부산(터미널)", time: "오후 3시" },
+                    { name: "양산 농공 단지", time: "오후 3시 50분" },
+                    { name: "울산", time: "오후 4시 50분" },
+                ],
+            },
+        ];
+
+        const container = document.getElementById("schedulesContainer");
+        schedules.forEach((schedule) => {
+            const scheduleHTML = `
+                <div class="schedule">
+                    <div class="schedule-header">
+                        <div class="time-info">
+                            <div class="time-duration">${schedule.duration}</div>
+                            <div class="time-range">${schedule.timeRange}</div>
+                        </div>
+                        <div class="bus-number">${schedule.busNumber}</div>
+                    </div>
+                    <div class="container">
+                        ${schedule.stations
+                          .map(
+                            (station) => `
+                            <div class="item">
+                                <div class="circle"></div>
+                                <p>${station.name}</p>
+                                <a class="station-time">${station.time}</a>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                        <div class="line"></div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+            `;
+            container.innerHTML += scheduleHTML;
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const icons = document.querySelectorAll('.input-wrapper i');
+            const submitBtn = document.getElementById('submit-btn');
+            const departureLocationInput = document.getElementById('departure-location');
+
+            // 아이콘 클릭 이벤트
+            icons.forEach(icon => {
+                icon.addEventListener('click', function () {
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        this.classList.remove('ph-fill');
+                        this.classList.add('ph-bold');
+                    } else {
+                        icons.forEach(i => {
+                            i.classList.remove('active');
+                            i.classList.remove('ph-fill');
+                            i.classList.add('ph-bold');
+                        });
+                        this.classList.add('active');
+                        this.classList.add('ph-fill');
+                        this.classList.remove('ph-bold');
+                    }
+                });
+            });
+
+            // 입력 필드에서 Enter 키를 누를 때 이벤트 처리
+            departureLocationInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // 기본 Enter 동작 방지
+                    sendKeyword();
+                }
+            });
+
+            // 제출 버튼 클릭 이벤트 처리
+            submitBtn.addEventListener('click', function() {
+                sendKeyword();
+            });
+
+            // 키워드를 부모 페이지로 전송하는 함수
+            function sendKeyword() {
+                var keyword = departureLocationInput.value;
+                window.parent.postMessage({ action: 'search', keyword: keyword }, '*');
+            }
+
+            const modal = document.querySelector('.modal');
+            const modalContent = document.querySelector('.modal-content');
+            const whiteBar = document.querySelector('.white-bar');
+
+            let isDragging = false;
+            let startY = 0;
+            let startHeight = 0;
+            const MIN_HEIGHT = window.innerHeight * 0.3; // 최소 높이: 화면 높이의 30%
+            const MAX_HEIGHT = window.innerHeight * 0.8; // 최대 높이: 화면 높이의 80%
+
+            function onMouseMove(event) {
+                if (!isDragging) return;
+
+                const newHeight = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, startHeight - (event.clientY - startY)));
+                modalContent.style.height = newHeight + 'px';
+                modalContent.style.transform = `translateY(${Math.max(0, MIN_HEIGHT - newHeight)}px)`;
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            whiteBar.addEventListener('mousedown', function (event) {
+                isDragging = true;
+                startY = event.clientY;
+                startHeight = modalContent.offsetHeight;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -25,7 +25,7 @@
             box-sizing: border-box;
         }
 
-        .signup-container input[type="email"],
+        .signup-container input[type="text"],
         .signup-container input[type="password"] {
             width: 100%;
             padding: 12px;
@@ -74,18 +74,57 @@
 </head>
 <body>
     <div class="signup-container">
-        <div class="label">이메일</div>
-        <input type="email" placeholder="이메일을 입력해주세요">
+        <div class="label">아이디</div>
+        <input type="text" id="identifier" placeholder="아이디을 입력해주세요">
         
         <div class="label">비밀번호</div>
-        <input type="password" placeholder="비밀번호를 입력해주세요">
+        <input type="password" id="password" placeholder="비밀번호를 입력해주세요">
 
         <div class="label">비밀번호 확인</div>
-        <input type="password" placeholder="비밀번호를 다시 입력해주세요">
+        <input type="password" placeholder="비밀번호를 확인해주세요">
         
-        <button>회원가입</button>
+        <button id="signupBtn">회원가입</button>
         
         <a href="#" class="signup-link"></a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const signupBtn = document.getElementById('signupBtn');
+
+    signupBtn.addEventListener('click', function(event) {
+        event.preventDefault(); // 기본 폼 제출 방지
+
+        const identifier = "tank6210";
+        const nickname = "tank6210";
+        const email = "tank6210@dgsw.hs.kr";
+        const password = document.getElementById('password').value.trim();
+
+        if (!email || !password) {
+            alert('이메일과 비밀번호를 입력해주세요.');
+            return;
+        }
+
+        // Axios를 사용하여 POST 요청 보내기
+        axios.post('https://canbus-server.whitedesert-8909941f.westus2.azurecontainerapps.io/auth/signup', {
+            identifier: identifier,
+            email: email,
+            password: password, 
+            nickname: nickname
+        })
+        .then(response => {
+            alert(response.data.message);
+            document.location.href='../auth/login';
+            console.log(response.data);
+        })
+        .catch(error => {
+            if (error.response) {
+                alert(error.response.data.message); // 오류 메시지 표시
+            } else {
+                console.error('Error:', error.message);
+            }
+        });
+    });
+});    </script>
 </body>
 </html>

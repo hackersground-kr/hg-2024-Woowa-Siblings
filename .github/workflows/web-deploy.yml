@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "canbus-server/**"
+      - "canbus-web/**"
 
 jobs:
   build:
@@ -13,19 +13,14 @@ jobs:
 
     env:
         TEAM_NAME: woowasiblings
-        APP_NAME: canbus-server
-        APP_ENV: canbus-server-env
+        APP_NAME: canbus-web
+        APP_ENV: canbus-web-env
         RG_NAME: rg-2024-Woowa-Siblings
 
     steps:
 
       - name: Check out code
         uses: actions/checkout@v2
-
-      - name: Make Env File
-        run: |
-          touch canbus-server/.env
-          echo "${{ secrets.ENV_FILE }}" >> canbus-server/.env
 
       - name: Log in to Azure
         uses: azure/login@v1
@@ -46,4 +41,4 @@ jobs:
           dockerfilePath: Dockerfile
 
       - name: Azure Container Apps Ingress Setting
-        run: az containerapp ingress update --name ${{ env.APP_NAME }} --resource-group ${{ env.RG_NAME }} --target-port 8080 --allow-insecure
+        run: az containerapp ingress update --name ${{ env.APP_NAME }} --resource-group ${{ env.RG_NAME }} --target-port 3000 --allow-insecure

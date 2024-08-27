@@ -282,7 +282,7 @@
                     headers: {Authorization: `Bearer ${responseData.data.accessToken}`}
                 })
                     .then(response => {
-                        alert(response.data.message);
+                        alert('노선 신청을 성공하였습니다.');
                     })
                     .catch(error => {
                         if (error.response) {

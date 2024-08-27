@@ -2,11 +2,12 @@
 const express = require('express')
 const path = require('path');
 const axios = require('axios');
+const cors = require('cors'); // CORS 패키지 추가
 const app = express()
 
-const openaiApiUrl = 'https://canbus-openai.openai.azure.com/openai/deployments/canbus-gpt/chat/completions?api-version=2024-02-15-preview';
-const openaiApiKey = 'ce397eede43c4aa59d4178a2da7e016d';
-
+app.use(cors({
+  origin: '*' // 허용할 도메인
+})); // CORS 미들웨어 추가
 app.use(express.json()); // JSON 파싱 미들웨어 추가
 
 // 라우트 정의
@@ -35,10 +36,15 @@ app.get('/mybus', (req, res) => {
 });
 
 app.get('/busRoute', (req, res) => {
+  res.setHeader('Access-Control-Allow-origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true'); // 쿠키 주고받기 허용
   res.sendFile(path.join(__dirname, 'busRoute', 'busRoute.html'));
 });
 
 app.get('/bus', async (req, res) => {
+  res.setHeader('Access-Control-Allow-origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true'); // 쿠키 주고받기 허용
+
   try {
     // 외부 API에서 데이터 가져오기
     const externalApiUrl = 'https://canbus-server.wittybeach-50fa98b2.westus2.azurecontainerapps.io/bus/passengers';

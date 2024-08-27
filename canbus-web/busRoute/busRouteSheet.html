@@ -15,6 +15,8 @@
     <script
         src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <style>
         body {
             font-family: 'Pretendard', sans-serif;
@@ -84,135 +86,6 @@
             cursor: grabbing;
         }
 
-        .input-container {
-            display: flex;
-            flex-direction: column;
-            width: 90%;
-            max-width: 400px;
-            padding-bottom: 20px;
-            border-radius: 10px;
-            background-color: #ffffff;
-            margin: 0 auto;
-        }
-
-        .input-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-bottom: none;
-            border-radius: 0;
-            outline: none;
-        }
-
-        .input-wrapper:first-child input {
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        .input-wrapper:last-child input {
-            border-bottom: 1px solid #ccc;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            z-index: 4;
-        }
-
-        .input-wrapper i {
-            margin-left: 10px;
-            font-size: 24px;
-            color: #5E5E5E;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        /* 호버 시 색상 변경 */
-        .input-wrapper i:hover {
-            color: #0083F0;
-        }
-
-        /* 클릭 시 색상과 스타일 변경 */
-        .input-wrapper i.active {
-            color: #0083F0;
-        }
-
-        .input-container input::placeholder {
-            color: #ccc;
-        }
-
-        .icon {
-            margin-left: 12px;
-            width: 18px;
-            height: 18px;
-        }
-
-        .submit-btn {
-            margin-top: 16px;
-            width: 100%;
-            height: 48px;
-            padding: 15px;
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .submit-btn:hover {
-            background-color: #357ae8;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .modal-content {
-                min-height: 40%;
-                /* 768px 이하일 때 최소 높이 40% */
-            }
-
-            .submit-btn {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .modal-content {
-                min-height: 50%;
-                /* 480px 이하일 때 최소 높이 50% */
-            }
-
-            .white-bar {
-                height: 25px;
-            }
-
-            .gray-bar {
-                width: 30px;
-                height: 3px;
-            }
-
-            .input-wrapper input {
-                padding: 8px;
-                font-size: 14px;
-            }
-
-            .submit-btn {
-                font-size: 14px;
-                height: 44px;
-                padding: 12px;
-            }
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            padding: 20px;
-        }
 
         * {
             margin: 0;
@@ -249,7 +122,7 @@
         }
 
         .item a {
-            font-size: 10px;
+            font-size: 12px;
             margin-left: 3px;
             color: #8c8c8c;
         }
@@ -292,19 +165,19 @@
         }
 
         .time-duration {
-            font-size: 1.125rem;
+            font-size: 18px;
             font-weight: 500;
         }
 
         .time-range {
-            font-size: 10px;
+            font-size: 12px;
             color: gray;
             margin-left: 0.25rem;
             margin-bottom: -5px;
         }
 
         .bus-number {
-            font-size: 1.125rem;
+            font-size: 18px;
             font-weight: 500;
             text-align: right;
         }
@@ -316,77 +189,18 @@
         }
 
         .station-title {
-            font-size: 1.125rem;
+            font-size: 14px;
             color: black;
         }
 
         .separator {
-            height: 2px;
+            height: 1px;
             background-color: #e0e0e0;
             margin: 1rem 0;
         }
 
         /* Responsive styles */
-        @media (max-width: 768px) {
-            .time-duration {
-                font-size: 1rem;
-            }
 
-            .bus-number {
-                font-size: 1rem;
-            }
-
-            .schedule {
-                padding: 0.75rem;
-                margin: 0.75rem auto;
-            }
-
-            .line {
-                width: 0.4rem;
-                margin: 0.4rem;
-            }
-
-            .circle {
-                width: 0.4rem;
-                height: 0.4rem;
-                margin: 0.4rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .time-duration {
-                font-size: 18px;
-            }
-
-            .bus-number {
-                font-size: 18px;
-            }
-
-            .schedule {
-                padding: 0.5rem;
-                margin: 0.5rem auto;
-            }
-
-            .line {
-                width: 0.3rem;
-                margin: 0.3rem;
-            }
-
-            .circle {
-                width: 0.3rem;
-                height: 0.3rem;
-                margin: 0.3rem;
-            }
-
-            .item p {
-                font-size: 14px;
-
-            }
-
-            .item a {
-                font-size: 10px;
-            }
-        }
 
         body {
             font-family: Arial, sans-serif;
@@ -468,113 +282,107 @@
         var mapContainer = document.getElementById('map');
         var geocoder = new kakao.maps.services.Geocoder();
 
-        const schedules = [{
-            duration: "1시간 30분",
-            timeRange: "오후 6시 15분 - 오후 7시",
-            busNumber: "5호차",
-            stations: [
-                { name: "경북 의성군 금성면 수정리 583", time: "오후 6시" },
-                { name: "경북 의성군 금성면 수정리 558-1", time: "오후 6시 15분" },
-                { name: "경북 의성군 금성면 수정리 423-1", time: "오후 7시" },
-            ],
-        },
-        {
-            duration: "1시간 30분",
-            timeRange: "오후 6시 15분 - 오후 7시",
-            busNumber: "5호차",
-            stations: [
-                { name: "의성(터미널)", time: "오후 6시" },
-                { name: "의성 농공 단지", time: "오후 6시 15분" },
-                { name: "봉양", time: "오후 7시" },
-            ],
-        }];
+        const responseData = JSON.parse(localStorage.getItem('loginResponse'));
 
-        const container = document.getElementById("schedulesContainer");
+        axios.get('https://canbus-server.wittybeach-50fa98b2.westus2.azurecontainerapps.io/bus', {
+            headers: { Authorization: `Bearer ${responseData.data.accessToken}` }
+        })
+            .then(response => {
+                const schedules = response.data.schedules; // 서버에서 받은 데이터 사용
+                const container = document.getElementById("schedulesContainer");
 
-        schedules.forEach((schedule) => {
-            const scheduleHTML = `
-                <div class="schedule">
-                    <div class="schedule-header">
-                        <div class="time-info">
-                            <div class="time-duration">${schedule.duration}</div>
-                            <div class="time-range">${schedule.timeRange}</div>
-                        </div>
+                schedules.forEach((schedule) => {
+                    const scheduleHTML = `
+                        <div class="schedule">
+                            <div class="schedule-header">
+                                <div class="time-info">
+                                    <div class="time-duration">${schedule.duration}</div >
+                                    <div class="time-range">${schedule.timeRange}</div>
+                                </div >
                         <div class="bus-number">${schedule.busNumber}</div>
-                    </div>
-                    <div class="container">
-                        ${schedule.stations
-                    .map(
-                        (station) => `
-                            <div class="item">
-                                <div class="circle"></div>
-                                <p>${station.name}</p>
-                                <a class="station-time">${station.time}</a>
-                            </div>
-                        `
-                    )
-                    .join("")}
-                        <div class="line"></div>
-                    </div>
-                </div>
-                <div class="separator"></div>
-            `;
-            container.innerHTML += scheduleHTML;
-        });
-
-        // 첫 번째 station의 좌표를 구해, 지도의 중심으로 설정합니다.
-        geocoder.addressSearch(schedules[0].stations[0].name, function (result, status) {
-            if (status === kakao.maps.services.Status.OK) {
-                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                // 지도 옵션 설정
-                var mapOption = {
-                    center: coords,
-                    level: 3 // 확대 레벨 설정
-                };
-                var map = new kakao.maps.Map(mapContainer, mapOption);
-
-                // 출발지 마커
-                const startMarker = new kakao.maps.Marker({
-                    position: coords,
-                    image: new kakao.maps.MarkerImage(
-                        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png',
-                        new kakao.maps.Size(42, 42)
-                    )
+                            </div >
+                        <div class="container">
+                            ${schedule.stations
+                            .map(
+                                (station) => `
+                                    <div class="item">
+                                        <div class="circle"></div>
+                                        <p>${station.name}</p>
+                                        <a class="station-time">${station.time}</a>
+                                    </div>
+                                `
+                            )
+                            .join("")}
+                            <div class="line"></div>
+                        </div>
+                        </div >
+                        <div class="separator"></div>
+                    `;
+                    container.innerHTML += scheduleHTML;
                 });
-                startMarker.setMap(map);
 
-                // 목적지 마커
-                const destination = schedules[0].stations[schedules[0].stations.length - 1];
-                geocoder.addressSearch(destination.name, function (result, status) {
+                // 첫 번째 station의 좌표를 구해, 지도의 중심으로 설정합니다.
+                geocoder.addressSearch(schedules[0].stations[0].name, function (result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-                        const destCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                        const endMarker = new kakao.maps.Marker({
-                            position: destCoords,
+                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                        // 지도 옵션 설정
+                        var mapOption = {
+                            center: coords,
+                            level: 3 // 확대 레벨 설정
+                        };
+                        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+                        // 출발지 마커
+                        const startMarker = new kakao.maps.Marker({
+                            position: coords,
                             image: new kakao.maps.MarkerImage(
-                                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png',
+                                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png',
                                 new kakao.maps.Size(42, 42)
                             )
                         });
-                        endMarker.setMap(map);
+                        startMarker.setMap(map);
 
-                        // 경유지 마커
-                        schedules[0].stations.slice(1, -1).forEach(station => {
-                            geocoder.addressSearch(station.name, function (result, status) {
-                                if (status === kakao.maps.services.Status.OK) {
-                                    const stationCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                                    const stationMarker = new kakao.maps.Marker({
-                                        position: stationCoords
+                        // 목적지 마커
+                        const destination = schedules[0].stations[schedules[0].stations.length - 1];
+                        geocoder.addressSearch(destination.name, function (result, status) {
+                            if (status === kakao.maps.services.Status.OK) {
+                                const destCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                const endMarker = new kakao.maps.Marker({
+                                    position: destCoords,
+                                    image: new kakao.maps.MarkerImage(
+                                        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png',
+                                        new kakao.maps.Size(42, 42)
+                                    )
+                                });
+                                endMarker.setMap(map);
+
+                                // 경유지 마커
+                                schedules[0].stations.slice(1, -1).forEach(station => {
+                                    geocoder.addressSearch(station.name, function (result, status) {
+                                        if (status === kakao.maps.services.Status.OK) {
+                                            const stationCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                            const stationMarker = new kakao.maps.Marker({
+                                                position: stationCoords
+                                            });
+                                            stationMarker.setMap(map);
+                                        }
                                     });
-                                    stationMarker.setMap(map);
-                                }
-                            });
+                                });
+                            }
                         });
+                    } else {
+                        console.error(`Failed to find coordinates for: ${schedules[0].stations[0].name} `);
                     }
                 });
-            } else {
-                console.error(`Failed to find coordinates for: ${schedules[0].stations[0].name}`);
-            }
-        });
+            })
+            .catch(error => {
+                if (error.response) {
+                    alert(error.response.data.message); // 오류 메시지 표시
+                } else {
+                    console.error('Error:', error.message);
+                }
+            });
 
         document.addEventListener('DOMContentLoaded', function () {
             const modal = document.querySelector('.modal');

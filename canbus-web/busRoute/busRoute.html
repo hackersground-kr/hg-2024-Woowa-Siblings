@@ -1,251 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Schedule</title>
-    <link
-      rel="stylesheet"
-      as="style"
-      crossorigin
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-    />
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #ffffff;
-        padding: 20px;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Responsive Schedule</title>
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      padding: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      gap: 4px;
+      flex-grow: 1;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .circle {
+      width: 0.5rem;
+      height: 0.5rem;
+      background-color: #ffffff;
+      border-radius: 50%;
+      margin: 0.5rem;
+      outline: 2px solid #c3c3c3;
+    }
+
+    .item p {
+      font-size: 14px;
+      color: #8c8c8c;
+      margin-right: 14;
+    }
+
+    .item a {
+      font-size: 10px;
+      margin-left: 3px;
+      color: #8c8c8c;
+    }
+
+    .station-time {
+      align-self: flex-end;
+      margin-bottom: 2px;
+      color: #8c8c8c;
+    }
+
+    .line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.5rem;
+      margin: 0.5rem;
+      height: calc(100% - 1rem);
+      border-radius: 50px;
+      background-color: #929292;
+    }
+
+    .schedule {
+      background-color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      max-width: 100%;
+      margin: 1rem auto;
+    }
+
+    .schedule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .time-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .time-duration {
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+
+    .time-range {
+      font-size: 10px;
+      color: gray;
+      margin-left: 0.25rem;
+      margin-bottom: -5px;
+    }
+
+    .bus-number {
+      font-size: 1.125rem;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .station {
+      font-size: 0.75rem;
+      color: gray;
+      margin: 0.5rem 0;
+    }
+
+    .station-title {
+      font-size: 1.125rem;
+      color: black;
+    }
+
+    .separator {
+      height: 2px;
+      background-color: #e0e0e0;
+      margin: 1rem 0;
+    }
+
+    .schedule-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navi-icon {
+      margin-left: 20px;
+    }
+
+    .navi-icon img {
+      width: 50px;
+      height: 50px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .time-duration {
+        font-size: 1rem;
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      .bus-number {
+        font-size: 1rem;
       }
 
-      .container {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        gap: 4px;
-        flex-grow: 1;
+      .schedule {
+        padding: 0.75rem;
+        margin: 0.75rem auto;
       }
 
-      .item {
-        display: flex;
-        align-items: center;
-        z-index: 1;
+      .line {
+        width: 0.4rem;
+        margin: 0.4rem;
       }
 
       .circle {
-        width: 0.5rem;
-        height: 0.5rem;
-        background-color: #ffffff;
-        border-radius: 50%;
-        margin: 0.5rem;
-        outline: 2px solid #c3c3c3;
+        width: 0.4rem;
+        height: 0.4rem;
+        margin: 0.4rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .time-duration {
+        font-size: 18px;
+      }
+
+      .bus-number {
+        font-size: 18px;
+      }
+
+      .schedule {
+        padding: 0.5rem;
+        margin: 0.5rem auto;
+      }
+
+      .line {
+        width: 0.3rem;
+        margin: 0.3rem;
+      }
+
+      .circle {
+        width: 0.3rem;
+        height: 0.3rem;
+        margin: 0.3rem;
       }
 
       .item p {
         font-size: 14px;
-        color: #8c8c8c;
-        margin-right: 14;
       }
 
       .item a {
         font-size: 10px;
-        margin-left: 3px;
-        color: #8c8c8c;
       }
+    }
+  </style>
+</head>
 
-      .station-time {
-        align-self: flex-end;
-        margin-bottom: 2px;
-        color: #8c8c8c;
-      }
+<body>
+  <div id="schedulesContainer"></div>
 
-      .line {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0.5rem;
-        margin: 0.5rem;
-        height: calc(100% - 1rem);
-        border-radius: 50px;
-        background-color: #929292;
-      }
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+    integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
+    crossorigin="anonymous"></script>
 
-      .schedule {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        max-width: 100%;
-        margin: 1rem auto;
-      }
+  <script
+    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
 
-      .schedule-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-      .time-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+  <script>
+    Kakao.init("6098f40a4999ebee23fff0c4d3eb2fe4"); // 사용하려는 앱의 JavaScript 키 입력
 
-      .time-duration {
-        font-size: 1.125rem;
-        font-weight: 500;
-      }
+    var geocoder = new kakao.maps.services.Geocoder();
 
-      .time-range {
-        font-size: 10px;
-        color: gray;
-        margin-left: 0.25rem;
-        margin-bottom: -5px;
-      }
+    axios.get('https://canbus-server.wittybeach-50fa98b2.westus2.azurecontainerapps.io/bus', {
+      headers: { Authorization: `Bearer ${responseData.data.accessToken}` }
+    })
+      .then(response => {
 
-      .bus-number {
-        font-size: 1.125rem;
-        font-weight: 500;
-        text-align: right;
-      }
-
-      .station {
-        font-size: 0.75rem;
-        color: gray;
-        margin: 0.5rem 0;
-      }
-
-      .station-title {
-        font-size: 1.125rem;
-        color: black;
-      }
-
-      .separator {
-        height: 2px;
-        background-color: #e0e0e0;
-        margin: 1rem 0;
-      }
-
-      .schedule-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .navi-icon {
-        margin-left: 20px;
-      }
-
-      .navi-icon img {
-        width: 50px;
-        height: 50px;
-      }
-
-      /* Responsive styles */
-      @media (max-width: 768px) {
-        .time-duration {
-          font-size: 1rem;
-        }
-
-        .bus-number {
-          font-size: 1rem;
-        }
-
-        .schedule {
-          padding: 0.75rem;
-          margin: 0.75rem auto;
-        }
-
-        .line {
-          width: 0.4rem;
-          margin: 0.4rem;
-        }
-
-        .circle {
-          width: 0.4rem;
-          height: 0.4rem;
-          margin: 0.4rem;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .time-duration {
-          font-size: 18px;
-        }
-
-        .bus-number {
-          font-size: 18px;
-        }
-
-        .schedule {
-          padding: 0.5rem;
-          margin: 0.5rem auto;
-        }
-
-        .line {
-          width: 0.3rem;
-          margin: 0.3rem;
-        }
-
-        .circle {
-          width: 0.3rem;
-          height: 0.3rem;
-          margin: 0.3rem;
-        }
-
-        .item p {
-          font-size: 14px;
-        }
-
-        .item a {
-          font-size: 10px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="schedulesContainer"></div>
-
-    <script
-      src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-      integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
-      crossorigin="anonymous"
-    ></script>
-
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6098f40a4999ebee23fff0c4d3eb2fe4&libraries=services"></script>
-
-    <script>
-      Kakao.init("6098f40a4999ebee23fff0c4d3eb2fe4"); // 사용하려는 앱의 JavaScript 키 입력
-
-      var geocoder = new kakao.maps.services.Geocoder();
-
-      const schedules = [
-        {
-          duration: "1시간 30분",
-          timeRange: "오후 6시 15분 - 오후 7시",
-          busNumber: "5호차",
-          stations: [
-            { name: "의성(터미널)", time: "오후 6시" },
-            { name: "의성 농공 단지", time: "오후 6시 15분" },
-            { name: "봉양", time: "오후 7시" },
-          ],
-        },
-      ];
-
-      const container = document.getElementById("schedulesContainer");
-      schedules.forEach((schedule) => {
-        const scheduleHTML = `
+        const container = document.getElementById("schedulesContainer");
+        schedules.forEach((schedule) => {
+          const scheduleHTML = `
                 <div class="schedule">
                     <div class="schedule-header">
                         <div class="time-info">
-                            <div class="time-duration">${
-                              schedule.duration
-                            }</div>
+                            <div class="time-duration">${schedule.duration
+            }</div>
                             <div class="time-range">${schedule.timeRange}</div>
                         </div>
                         <div class="bus-number">${schedule.busNumber}</div>
@@ -253,16 +243,16 @@
                     <div class="schedule-content">
                         <div class="container">
                             ${schedule.stations
-                              .map(
-                                (station) => `
+              .map(
+                (station) => `
                                 <div class="item">
                                     <div class="circle"></div>
                                     <p>${station.name}</p>
                                     <a class="station-time">${station.time}</a>
                                 </div>
                                 `
-                              )
-                              .join("")}
+              )
+              .join("")}
                             <div class="line"></div>
                         </div>
                         <div class="navi-icon">
@@ -275,27 +265,36 @@
                     <div class="separator"></div>
                 </div>
             `;
-        container.innerHTML += scheduleHTML;
-      });
-      const naviBtn = document.getElementById("naviBtn");
+          container.innerHTML += scheduleHTML;
+        });
+        const naviBtn = document.getElementById("naviBtn");
 
-      function startNavigation() {
-        geocoder.addressSearch(
-          schedules[0].stations[0].name,
-          function (result, status) {
-            if (status === kakao.maps.services.Status.OK) {
+        function startNavigation() {
+          geocoder.addressSearch(
+            schedules[0].stations[0].name,
+            function (result, status) {
+              if (status === kakao.maps.services.Status.OK) {
                 const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-            
-              Kakao.Navi.share({
-                name: schedules[0].stations[0].name,
-                x: coords.getLng(),
-                y: coords.getLat(),
-                coordType: "wgs84",
-              });
+
+                Kakao.Navi.share({
+                  name: schedules[0].stations[0].name,
+                  x: coords.getLng(),
+                  y: coords.getLat(),
+                  coordType: "wgs84",
+                });
+              }
             }
-          }
-        );
-      }
-    </script>
-  </body>
+          );
+        }
+      })
+      .catch(error => {
+        if (error.response) {
+          alert(error.response.data.message); // 오류 메시지 표시
+        } else {
+          console.error('Error:', error.message);
+        }
+      });
+  </script>
+</body>
+
 </html>

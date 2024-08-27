@@ -11,9 +11,9 @@ class Passenger (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val arrivalPlace: String,
+    val arrival: String,
 
-    val departurePlace: String,
+    val departure: String,
 
     val departureTime: String,
 

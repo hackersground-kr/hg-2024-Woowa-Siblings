@@ -55,19 +55,22 @@
 git clone https://github.com/<자신의 GitHub ID>/hg-2024-Woowa-Siblings
 ```
 
-1. 레포지토리를 클론 받아온 위치에서 Windows는 CMD, Mac은 터미널을 실행합니다.
+1. Visual Studio Code를 실행하고 터미널을 bash로 실행합니다
+  1. 명령 팔레트를 엽니다 (Window : ctrl + shift + p / Mac : command + shift + p)
+  2. select default profile을 실행하고, bash 선택
+  3. 명령 팔레트를 열고 create new terminal을 실행합니다
 2. 작업을 진행하기 위해 변수에 필요한 정보를 저장하고 시작합니다.
 
 ```bash
 TEAM_NAME=<your-team-name>
 SERVICE_NAME=<your-service-name> # canbus로 하는 것을 추천합니다
 RG_NAME=<your-resource-group-name>
-REPO=<your-fork-repository-name>
-DB_USERNAME=<db-username>
-DB_PASSWORD=<db-password> # 영어, 숫자, 특수문자 포함해야 합니다 (비밀번호에 !를 사용할 경우 ! 앞에 백틱을 꼭 붙여줘야 합니다! ex) \! )
+REPO=<your-fork-repository-name> # ex) hackersground/hg-2024-Woowa-Siblings
+DB_USERNAME=<db-username> # 5자 이상이어야 합니다
+DB_PASSWORD=<db-password> # 영어, 숫자, 특수문자 포함해야 합니다 (비밀번호에 !를 사용할 경우 ! 앞에 백스페이스를 꼭 붙여줘야 합니다! ex) \! )
 ```
 
-3. canbus-server/ 경로에 .env 파일이 존재하지 않으면 템플릿을 만듭니다
+3. canbus-server/ 경로에 .env 파일이 존재하지 않으면 템플릿을 만드는 명령어입니다
 
 ```bash
 if [ ! -f canbus-server/.env ]; then
@@ -83,7 +86,7 @@ if [ ! -f canbus-server/.env ]; then
 fi
 ```
 
-4. 2에서 기입했던 내용에 맞게 .env 파일을 수정하고 ENV_FILE 변수에 파일 내용을 저장합니다
+4. 2에서 기입했던 내용에 맞게 .env 파일을 수정하고 ENV_FILE 변수에 파일 내용을 저장하는 명령어입니다.
 
 ```bash
 sed -i '' "s/^DB_URL=.*/DB_URL=$TEAM_NAME-db.mysql.database.azure.com/" canbus-server/.env
@@ -98,7 +101,7 @@ sed -i '' "s/^JWT_REFRESH_EXPIRED=.*/JWT_REFRESH_EXPIRED=7/" canbus-server/.env
 ENV_FILE=$(cat canbus-server/.env)
 ```
 
-5. Azure와 Github에 로그인을 하고 AZURE_CREDENTIALS 변수에 값을 저장합니다
+5. Azure와 Github에 로그인을 하고 AZURE_CREDENTIALS 변수에 값을 저장하는 명령어입니다.
 
 ```bash
 az login
@@ -145,11 +148,25 @@ gh secret set ACR_NAME --body <레지스트리 이름> --repo $REPO
 gh secret set ACR_USERNAME --body <복사해둔 사용자 이름> --repo $REPO
 gh secret set ACR_PASSWORD --body <복사해둔 password> --repo $REPO
 ```
+10. https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem 링크에서 pem 파일을 다운받는다.
+11. MySQL Workbench (DB) 연결 설정
+    1. **MySQL 연결** 탭에서 **+** 기호를 클릭하여 새 연결을 추가합니다.
+    2. **연결 이름** 필드에 연결 이름(아무거나 괜찮음)을 입력합니다.
+    3. 연결 형식으로 표준(TCP/IP)을 선택합니다.
+    4. **Hostname 필드**에 **$TEAM_NAME-db.mysql.database.azure.com**을 입력하세요.
+    5. **Username 필드**에 **$DB_USERNAME**을 입력한 후 **Store in Keychain**을 눌러 **$DB_PASSWORD**를 입력합니다.
+    6. **SSL 탭**(으)로 이동하여 SSL 사용 필드를 **Require**로 업데이트합니다.
+    7. **SSL CA 파일** 필드에 아까 다운로드 받은 **DigiCertGlobalRootCA.crt.pem** 파일의 파일 위치를 입력합니다.
+    8. **연결 테스트**을(를) 클릭하여 연결을 테스트합니다.
+    9. 연결에 성공하면 **확인**을(를) 클릭하여 연결을 저장합니다.
+12. 만든 연결을 통해 DB에 연결합니다. 
+13. Schema 탭을 우클릭하고, **Create Schema** 버튼을 클릭합니다.
+14. Schema Name 칸에 **$SERVICE_NAME-db**를 기입하고 Add 버튼을 클릭합니다.
 
-10. 1번, 2번, 3번 순서대로 클릭하여 서버 배포를 시작합니다
+15. 1번, 2번, 3번 순서대로 클릭하여 서버 배포를 시작합니다 (canbus-server 모듈에 change가 발생한 commit이 main에 push 되어도 자동 배포됩니다)
 
 ![](images/Frame_771.png)
 
-11. 1번, 2번, 3번 순서대로 클릭하여 웹 배포를 시작합니다
+16. 1번, 2번, 3번 순서대로 클릭하여 웹 배포를 시작합니다 (canbus-web 모듈에 change가 발생한 commit이 main에 push 되어도 자동 배포됩니다)
 
 ![](images/Frame_772.png)

@@ -15,7 +15,7 @@ class BusService(
     private val busRepository: BusRepository,
     private val userRepository: UserRepository,
     private val passengerRepository: PassengerRepository,
-    private val securityUtil: SecurityUtil
+    private val securityUtil: SecurityUtil,
 ) {
 
     fun getBusList(): List<BusResponse> {
@@ -42,14 +42,21 @@ class BusService(
         val user = userRepository.findByIdOrNull(securityUtil.getCurrentUserId())!!
 
         val passenger = Passenger(
-            arrivalPlace = request.arrivalPlace,
-            departurePlace = request.departurePlace,
+            arrival = request.arrival,
+            departure = request.departure,
             departureTime = request.departureTime,
             user = user
         )
 
         passengerRepository.save(passenger)
 
+    }
+
+    fun getPassengerList(): List<Passenger> {
+
+        val passengerList = passengerRepository.findAll()
+
+        return passengerList.toList()
     }
 
 }

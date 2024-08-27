@@ -2,9 +2,9 @@ package kr.hs.dgsw.canbusserver.domain.bus.presentation.dto
 
 class ApplyBusRequest(
 
-    val arrivalPlace: String,
+    val arrival: String,
 
-    val departurePlace: String,
+    val departure: String,
 
     val departureTime: String,
 

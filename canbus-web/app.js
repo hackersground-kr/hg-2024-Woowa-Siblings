@@ -6,7 +6,8 @@ const cors = require('cors'); // CORS 패키지 추가
 const app = express()
 
 app.use(cors({
-  origin: '*' // 허용할 도메인
+  origin: '*',
+  Credentials: true // 허용할 도메인
 })); // CORS 미들웨어 추가
 app.use(express.json()); // JSON 파싱 미들웨어 추가
 

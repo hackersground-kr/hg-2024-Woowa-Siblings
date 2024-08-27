@@ -223,10 +223,20 @@
 
     var geocoder = new kakao.maps.services.Geocoder();
 
-    axios.get('https://canbus-web.ashybush-835ccb68.westus2.azurecontainerapps.io/bus')
-      .then(response => {
-        schedules = response
-        const container = document.getElementById("schedulesContainer");
+    const schedules = [
+        {
+          duration: "1시간 30분",
+          timeRange: "오후 6시 15분 - 오후 7시",
+          busNumber: "5호차",
+          stations: [
+            { name: "의성(터미널)", time: "오후 6시" },
+            { name: "의성 농공 단지", time: "오후 6시 15분" },
+            { name: "봉양", time: "오후 7시" },
+          ],
+        },
+      ];
+
+      const container = document.getElementById("schedulesContainer");
         schedules.forEach((schedule) => {
           const scheduleHTML = `
                 <div class="schedule">
@@ -283,14 +293,20 @@
             }
           );
         }
-      })
-      .catch(error => {
-        if (error.response) {
-          alert(error.response.data.message); // 오류 메시지 표시
-        } else {
-          console.error('Error:', error.message);
-        }
-      });
+
+
+    // axios.get('https://canbus-web.ashybush-835ccb68.westus2.azurecontainerapps.io/bus')
+    //   .then(response => {
+    //     schedules = response
+        
+    //   })
+    //   .catch(error => {
+    //     if (error.response) {
+    //       alert(error.response.data.message); // 오류 메시지 표시
+    //     } else {
+    //       console.error('Error:', error.message);
+    //     }
+    //   });
   </script>
 </body>
 

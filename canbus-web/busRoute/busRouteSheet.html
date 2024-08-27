@@ -284,13 +284,23 @@
 
         const responseData = JSON.parse(localStorage.getItem('loginResponse'));
 
-        axios.get('https://canbus-web.ashybush-835ccb68.westus2.azurecontainerapps.io/bus')
-            .then(response => {
-                const schedules = response; // 서버에서 받은 데이터 사용
-                const container = document.getElementById("schedulesContainer");
+        const schedules = [
+            {
+                duration: "1시간 30분",
+                timeRange: "오후 6시 15분 - 오후 7시",
+                busNumber: "5호차",
+                stations: [
+                    { name: "의성(터미널)", time: "오후 6시" },
+                    { name: "의성 농공 단지", time: "오후 6시 15분" },
+                    { name: "봉양", time: "오후 7시" },
+                ],
+            },
+        ];
 
-                schedules.forEach((schedule) => {
-                    const scheduleHTML = `
+        const container = document.getElementById("schedulesContainer");
+
+        schedules.forEach((schedule) => {
+            const scheduleHTML = `
                         <div class="schedule">
                             <div class="schedule-header">
                                 <div class="time-info">
@@ -301,86 +311,91 @@
                             </div >
                         <div class="container">
                             ${schedule.stations
-                            .map(
-                                (station) => `
+                    .map(
+                        (station) => `
                                     <div class="item">
                                         <div class="circle"></div>
                                         <p>${station.name}</p>
                                         <a class="station-time">${station.time}</a>
                                     </div>
                                 `
-                            )
-                            .join("")}
+                    )
+                    .join("")}
                             <div class="line"></div>
                         </div>
                         </div >
                         <div class="separator"></div>
                     `;
-                    container.innerHTML += scheduleHTML;
+            container.innerHTML += scheduleHTML;
+        });
+
+        // 첫 번째 station의 좌표를 구해, 지도의 중심으로 설정합니다.
+        geocoder.addressSearch(schedules[0].stations[0].name, function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // 지도 옵션 설정
+                var mapOption = {
+                    center: coords,
+                    level: 3 // 확대 레벨 설정
+                };
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+
+                // 출발지 마커
+                const startMarker = new kakao.maps.Marker({
+                    position: coords,
+                    image: new kakao.maps.MarkerImage(
+                        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png',
+                        new kakao.maps.Size(42, 42)
+                    )
                 });
+                startMarker.setMap(map);
 
-                // 첫 번째 station의 좌표를 구해, 지도의 중심으로 설정합니다.
-                geocoder.addressSearch(schedules[0].stations[0].name, function (result, status) {
+                // 목적지 마커
+                const destination = schedules[0].stations[schedules[0].stations.length - 1];
+                geocoder.addressSearch(destination.name, function (result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                        // 지도 옵션 설정
-                        var mapOption = {
-                            center: coords,
-                            level: 3 // 확대 레벨 설정
-                        };
-                        var map = new kakao.maps.Map(mapContainer, mapOption);
-
-                        // 출발지 마커
-                        const startMarker = new kakao.maps.Marker({
-                            position: coords,
+                        const destCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        const endMarker = new kakao.maps.Marker({
+                            position: destCoords,
                             image: new kakao.maps.MarkerImage(
-                                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png',
+                                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png',
                                 new kakao.maps.Size(42, 42)
                             )
                         });
-                        startMarker.setMap(map);
+                        endMarker.setMap(map);
 
-                        // 목적지 마커
-                        const destination = schedules[0].stations[schedules[0].stations.length - 1];
-                        geocoder.addressSearch(destination.name, function (result, status) {
-                            if (status === kakao.maps.services.Status.OK) {
-                                const destCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                                const endMarker = new kakao.maps.Marker({
-                                    position: destCoords,
-                                    image: new kakao.maps.MarkerImage(
-                                        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png',
-                                        new kakao.maps.Size(42, 42)
-                                    )
-                                });
-                                endMarker.setMap(map);
-
-                                // 경유지 마커
-                                schedules[0].stations.slice(1, -1).forEach(station => {
-                                    geocoder.addressSearch(station.name, function (result, status) {
-                                        if (status === kakao.maps.services.Status.OK) {
-                                            const stationCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                                            const stationMarker = new kakao.maps.Marker({
-                                                position: stationCoords
-                                            });
-                                            stationMarker.setMap(map);
-                                        }
+                        // 경유지 마커
+                        schedules[0].stations.slice(1, -1).forEach(station => {
+                            geocoder.addressSearch(station.name, function (result, status) {
+                                if (status === kakao.maps.services.Status.OK) {
+                                    const stationCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                    const stationMarker = new kakao.maps.Marker({
+                                        position: stationCoords
                                     });
-                                });
-                            }
+                                    stationMarker.setMap(map);
+                                }
+                            });
                         });
-                    } else {
-                        console.error(`Failed to find coordinates for: ${schedules[0].stations[0].name} `);
                     }
                 });
-            })
-            .catch(error => {
-                if (error.response) {
-                    alert(error.response.data.message); // 오류 메시지 표시
-                } else {
-                    console.error('Error:', error.message);
-                }
-            });
+            } else {
+                console.error(`Failed to find coordinates for: ${schedules[0].stations[0].name} `);
+            }
+        });
+
+        // axios.get('https://canbus-web.ashybush-835ccb68.westus2.azurecontainerapps.io/bus')
+        //     .then(response => {
+        //         const schedules = response; // 서버에서 받은 데이터 사용
+
+        //     })
+        //     .catch(error => {
+        //         if (error.response) {
+        //             alert(error.response.data.message); // 오류 메시지 표시
+        //         } else {
+        //             console.error('Error:', error.message);
+        //         }
+        //     });
 
         document.addEventListener('DOMContentLoaded', function () {
             const modal = document.querySelector('.modal');
